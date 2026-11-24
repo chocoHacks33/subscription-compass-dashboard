@@ -50,6 +50,41 @@
         </article>
       </section>
 
+      <section class="budget-panel" aria-labelledby="budget-heading">
+        <div>
+          <p class="eyebrow">Spending guardrail</p>
+          <h2 id="budget-heading">Monthly subscription budget</h2>
+          <p id="budget-status" class="budget-status" aria-live="polite"></p>
+        </div>
+        <div class="budget-controls">
+          <form id="budget-form" class="budget-form">
+            <label for="budget-input">Target</label>
+            <div class="budget-input-wrap">
+              <span aria-hidden="true">$</span>
+              <input
+                id="budget-input"
+                type="number"
+                min="1"
+                step="0.01"
+                inputmode="decimal"
+                required
+              />
+            </div>
+            <button type="submit">Save target</button>
+          </form>
+          <div
+            id="budget-progress"
+            class="budget-progress"
+            role="progressbar"
+            aria-label="Monthly subscription budget used"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <span id="budget-progress-fill"></span>
+          </div>
+        </div>
+      </section>
+
       <section class="panel" aria-labelledby="subscriptions-heading">
         <div class="panel-heading">
           <div>
