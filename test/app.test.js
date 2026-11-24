@@ -12,6 +12,9 @@ const {
   getNextRenewal,
   formatCurrency,
   formatDate,
+  protectSpreadsheetCell,
+  escapeCsvCell,
+  buildSubscriptionCsv,
 } = require('../app.js');
 
 test('active subscriptions exclude paused plans', () => {
@@ -42,4 +45,33 @@ test('local ISO dates retain local calendar components', () => {
 test('currency and date formatters produce readable labels', () => {
   assert.equal(formatCurrency(12), '$12.00');
   assert.equal(formatDate('2026-12-15'), 'Dec 15, 2026');
+});
+
+test('CSV cells escape punctuation and neutralize spreadsheet formulas', () => {
+  assert.equal(escapeCsvCell('Plan, Plus'), '"Plan, Plus"');
+  assert.equal(escapeCsvCell('Say "hello"'), '"Say ""hello"""');
+  assert.equal(protectSpreadsheetCell('=2+2'), "'=2+2");
+  assert.equal(protectSpreadsheetCell('  @SUM(A1:A2)'), "'  @SUM(A1:A2)");
+  assert.equal(protectSpreadsheetCell(12.5), '12.5');
+});
+
+test('subscription CSV includes a header and one row per plan', () => {
+  const csv = buildSubscriptionCsv(subscriptions);
+  const rows = csv.split('\r\n');
+  assert.equal(rows[0], 'Service,Category,Monthly Cost,Renewal Date,Status');
+  assert.equal(rows.length, subscriptions.length + 1);
+  assert.match(csv, /Designly,Design,18\.00,2026-12-03,Active/);
+});
+
+test('subscription CSV protects user-provided service names', () => {
+  const csv = buildSubscriptionCsv([
+    {
+      name: '=HYPERLINK("https://example.com")',
+      category: 'Other',
+      monthlyCost: 5,
+      renewalDate: '2027-01-01',
+      status: 'Active',
+    },
+  ]);
+  assert.match(csv, /"'=HYPERLINK\(""https:\/\/example\.com""\)"/);
 });
