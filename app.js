@@ -92,6 +92,45 @@ function formatDate(dateString) {
   }).format(new Date(year, month - 1, day));
 }
 
+function protectSpreadsheetCell(value) {
+  if (typeof value !== 'string') return String(value);
+  return /^[\t\r ]*[=+\-@]/.test(value) ? `'${value}` : value;
+}
+
+function escapeCsvCell(value) {
+  const protectedValue = protectSpreadsheetCell(value);
+  return /[",\r\n]/.test(protectedValue)
+    ? `"${protectedValue.replaceAll('"', '""')}"`
+    : protectedValue;
+}
+
+function buildSubscriptionCsv(items) {
+  const rows = [
+    ['Service', 'Category', 'Monthly Cost', 'Renewal Date', 'Status'],
+    ...items.map((item) => [
+      item.name,
+      item.category,
+      item.monthlyCost.toFixed(2),
+      item.renewalDate,
+      item.status,
+    ]),
+  ];
+
+  return rows.map((row) => row.map(escapeCsvCell).join(',')).join('\r\n');
+}
+
+function downloadCsv(content, filename) {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 function makeCell(text, className = '') {
   const cell = document.createElement('td');
   cell.textContent = text;
@@ -146,6 +185,9 @@ function renderDashboard(items) {
 
 if (typeof document !== 'undefined') {
   renderDashboard(subscriptions);
+  document.querySelector('#export-csv').addEventListener('click', () => {
+    downloadCsv(buildSubscriptionCsv(subscriptions), 'subscription-compass.csv');
+  });
 }
 
 if (typeof module !== 'undefined') {
@@ -158,5 +200,8 @@ if (typeof module !== 'undefined') {
     getNextRenewal,
     formatCurrency,
     formatDate,
+    protectSpreadsheetCell,
+    escapeCsvCell,
+    buildSubscriptionCsv,
   };
 }
