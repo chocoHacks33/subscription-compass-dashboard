@@ -92,6 +92,27 @@ function formatDate(dateString) {
   }).format(new Date(year, month - 1, day));
 }
 
+function summarizeCategorySpend(items) {
+  const activeItems = getActiveSubscriptions(items);
+  const total = calculateMonthlyTotal(activeItems);
+  const totals = activeItems.reduce((summary, item) => {
+    summary.set(item.category, (summary.get(item.category) ?? 0) + item.monthlyCost);
+    return summary;
+  }, new Map());
+
+  return [...totals.entries()]
+    .map(([category, monthlyCost]) => ({
+      category,
+      monthlyCost,
+      percentage: total === 0 ? 0 : (monthlyCost / total) * 100,
+    }))
+    .sort(
+      (first, second) =>
+        second.monthlyCost - first.monthlyCost ||
+        first.category.localeCompare(second.category),
+    );
+}
+
 function makeCell(text, className = '') {
   const cell = document.createElement('td');
   cell.textContent = text;
@@ -124,6 +145,53 @@ function renderSubscriptionRows(items) {
   });
 }
 
+function renderCategorySpend(items) {
+  const list = document.querySelector('#category-spend-list');
+  const summary = summarizeCategorySpend(items);
+  list.replaceChildren();
+
+  if (summary.length === 0) {
+    const message = document.createElement('p');
+    message.className = 'category-spend-empty';
+    message.textContent = 'No active subscription costs to compare.';
+    list.append(message);
+    return;
+  }
+
+  summary.forEach((entry) => {
+    const row = document.createElement('div');
+    row.className = 'category-spend-row';
+
+    const label = document.createElement('span');
+    label.className = 'category-spend-label';
+    label.textContent = entry.category;
+
+    const track = document.createElement('div');
+    track.className = 'category-spend-track';
+    track.setAttribute('role', 'progressbar');
+    track.setAttribute('aria-label', `${entry.category} share of monthly spend`);
+    track.setAttribute('aria-valuemin', '0');
+    track.setAttribute('aria-valuemax', '100');
+    track.setAttribute('aria-valuenow', String(Math.round(entry.percentage)));
+    track.setAttribute(
+      'aria-valuetext',
+      `${formatCurrency(entry.monthlyCost)}, ${entry.percentage.toFixed(1)} percent`,
+    );
+
+    const bar = document.createElement('span');
+    bar.className = 'category-spend-bar';
+    bar.style.width = `${entry.percentage}%`;
+    track.append(bar);
+
+    const value = document.createElement('span');
+    value.className = 'category-spend-value';
+    value.textContent = formatCurrency(entry.monthlyCost);
+
+    row.append(label, track, value);
+    list.append(row);
+  });
+}
+
 function renderDashboard(items) {
   const activeItems = getActiveSubscriptions(items);
   const nextRenewal = getNextRenewal(items);
@@ -142,6 +210,7 @@ function renderDashboard(items) {
     : 'No upcoming charge';
 
   renderSubscriptionRows(items);
+  renderCategorySpend(items);
 }
 
 if (typeof document !== 'undefined') {
@@ -158,5 +227,6 @@ if (typeof module !== 'undefined') {
     getNextRenewal,
     formatCurrency,
     formatDate,
+    summarizeCategorySpend,
   };
 }
