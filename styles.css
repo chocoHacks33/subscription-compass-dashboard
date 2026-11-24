@@ -123,10 +123,79 @@ h2 {
 }
 
 .metric-card,
+.renewal-panel,
 .panel {
   border: 1px solid rgba(223, 229, 242, 0.9);
   background: var(--surface);
   box-shadow: var(--shadow);
+}
+
+.renewal-panel {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.65fr) minmax(0, 1.35fr);
+  gap: 26px;
+  margin-bottom: 24px;
+  padding: 24px 26px;
+  border-radius: 22px;
+}
+
+.renewal-copy {
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.renewal-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.renewal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fafbfe;
+}
+
+.renewal-item strong,
+.renewal-item span {
+  display: block;
+}
+
+.renewal-item strong {
+  margin-bottom: 4px;
+  font-size: 0.88rem;
+}
+
+.renewal-item span {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.renewal-days {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.renewal-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  color: var(--muted);
+  text-align: center;
 }
 
 .metric-card {
@@ -236,6 +305,10 @@ tbody tr:last-child td {
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .renewal-panel {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
@@ -250,6 +323,10 @@ tbody tr:last-child td {
   }
 
   .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .renewal-list {
     grid-template-columns: 1fr;
   }
 
