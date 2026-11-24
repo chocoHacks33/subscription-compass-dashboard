@@ -92,6 +92,27 @@ function formatDate(dateString) {
   }).format(new Date(year, month - 1, day));
 }
 
+function isoDateToUTC(dateString) {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return Date.UTC(year, month - 1, day);
+}
+
+function daysUntilRenewal(renewalDate, today = getLocalISODate()) {
+  return Math.round((isoDateToUTC(renewalDate) - isoDateToUTC(today)) / 86_400_000);
+}
+
+function getUpcomingRenewals(items, today = getLocalISODate(), horizonDays = 30) {
+  return getActiveSubscriptions(items)
+    .map((item) => ({
+      ...item,
+      daysRemaining: daysUntilRenewal(item.renewalDate, today),
+    }))
+    .filter(
+      (item) => item.daysRemaining >= 0 && item.daysRemaining <= horizonDays,
+    )
+    .sort((first, second) => first.daysRemaining - second.daysRemaining);
+}
+
 function makeCell(text, className = '') {
   const cell = document.createElement('td');
   cell.textContent = text;
@@ -124,6 +145,42 @@ function renderSubscriptionRows(items) {
   });
 }
 
+function renderUpcomingRenewals(items) {
+  const list = document.querySelector('#renewal-list');
+  const upcoming = getUpcomingRenewals(items);
+  list.replaceChildren();
+
+  if (upcoming.length === 0) {
+    const message = document.createElement('li');
+    message.className = 'renewal-empty';
+    message.textContent = 'No active subscriptions renew in the next 30 days.';
+    list.append(message);
+    return;
+  }
+
+  upcoming.forEach((item) => {
+    const entry = document.createElement('li');
+    entry.className = 'renewal-item';
+
+    const details = document.createElement('div');
+    const name = document.createElement('strong');
+    const date = document.createElement('span');
+    name.textContent = item.name;
+    date.textContent = `${formatDate(item.renewalDate)} · ${formatCurrency(item.monthlyCost)}`;
+    details.append(name, date);
+
+    const remaining = document.createElement('div');
+    remaining.className = 'renewal-days';
+    remaining.textContent =
+      item.daysRemaining === 0
+        ? 'Today'
+        : `${item.daysRemaining} day${item.daysRemaining === 1 ? '' : 's'}`;
+
+    entry.append(details, remaining);
+    list.append(entry);
+  });
+}
+
 function renderDashboard(items) {
   const activeItems = getActiveSubscriptions(items);
   const nextRenewal = getNextRenewal(items);
@@ -142,6 +199,7 @@ function renderDashboard(items) {
     : 'No upcoming charge';
 
   renderSubscriptionRows(items);
+  renderUpcomingRenewals(items);
 }
 
 if (typeof document !== 'undefined') {
@@ -158,5 +216,7 @@ if (typeof module !== 'undefined') {
     getNextRenewal,
     formatCurrency,
     formatDate,
+    daysUntilRenewal,
+    getUpcomingRenewals,
   };
 }

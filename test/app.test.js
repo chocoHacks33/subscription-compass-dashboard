@@ -12,6 +12,8 @@ const {
   getNextRenewal,
   formatCurrency,
   formatDate,
+  daysUntilRenewal,
+  getUpcomingRenewals,
 } = require('../app.js');
 
 test('active subscriptions exclude paused plans', () => {
@@ -42,4 +44,22 @@ test('local ISO dates retain local calendar components', () => {
 test('currency and date formatters produce readable labels', () => {
   assert.equal(formatCurrency(12), '$12.00');
   assert.equal(formatDate('2026-12-15'), 'Dec 15, 2026');
+});
+
+test('renewal day math is stable across calendar boundaries', () => {
+  assert.equal(daysUntilRenewal('2027-01-02', '2026-12-31'), 2);
+  assert.equal(daysUntilRenewal('2026-12-31', '2026-12-31'), 0);
+});
+
+test('renewal planner includes only active plans inside the horizon', () => {
+  const upcoming = getUpcomingRenewals(subscriptions, '2026-11-24', 30);
+  assert.deepEqual(
+    upcoming.map((item) => [item.name, item.daysRemaining]),
+    [
+      ['Designly', 9],
+      ['CloudSafe', 13],
+      ['FocusFlow', 21],
+      ['SoundWave', 26],
+    ],
+  );
 });
