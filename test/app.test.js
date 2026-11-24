@@ -12,6 +12,8 @@ const {
   getNextRenewal,
   formatCurrency,
   formatDate,
+  getCategories,
+  filterSubscriptions,
 } = require('../app.js');
 
 test('active subscriptions exclude paused plans', () => {
@@ -42,4 +44,22 @@ test('local ISO dates retain local calendar components', () => {
 test('currency and date formatters produce readable labels', () => {
   assert.equal(formatCurrency(12), '$12.00');
   assert.equal(formatDate('2026-12-15'), 'Dec 15, 2026');
+});
+
+test('categories are unique and alphabetically ordered', () => {
+  assert.deepEqual(getCategories(subscriptions), [
+    'Design',
+    'Entertainment',
+    'Learning',
+    'News',
+    'Productivity',
+    'Storage',
+  ]);
+});
+
+test('category filter narrows plans without changing the source list', () => {
+  const filtered = filterSubscriptions(subscriptions, 'Learning');
+  assert.deepEqual(filtered.map((item) => item.name), ['CodeLab']);
+  assert.equal(subscriptions.length, 6);
+  assert.equal(filterSubscriptions(subscriptions, 'all').length, 6);
 });

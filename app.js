@@ -92,6 +92,17 @@ function formatDate(dateString) {
   }).format(new Date(year, month - 1, day));
 }
 
+function getCategories(items) {
+  return [...new Set(items.map((item) => item.category))].sort((first, second) =>
+    first.localeCompare(second),
+  );
+}
+
+function filterSubscriptions(items, category) {
+  if (!category || category === 'all') return [...items];
+  return items.filter((item) => item.category === category);
+}
+
 function makeCell(text, className = '') {
   const cell = document.createElement('td');
   cell.textContent = text;
@@ -124,6 +135,26 @@ function renderSubscriptionRows(items) {
   });
 }
 
+function setupCategoryFilter(items) {
+  const filter = document.querySelector('#category-filter');
+
+  getCategories(items).forEach((category) => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    filter.append(option);
+  });
+
+  filter.addEventListener('change', () => {
+    const visibleItems = filterSubscriptions(items, filter.value);
+    renderSubscriptionRows(visibleItems);
+    document.querySelector('#plan-count').textContent =
+      visibleItems.length === items.length
+        ? `${items.length} plans`
+        : `${visibleItems.length} of ${items.length} plans`;
+  });
+}
+
 function renderDashboard(items) {
   const activeItems = getActiveSubscriptions(items);
   const nextRenewal = getNextRenewal(items);
@@ -146,6 +177,7 @@ function renderDashboard(items) {
 
 if (typeof document !== 'undefined') {
   renderDashboard(subscriptions);
+  setupCategoryFilter(subscriptions);
 }
 
 if (typeof module !== 'undefined') {
@@ -158,5 +190,7 @@ if (typeof module !== 'undefined') {
     getNextRenewal,
     formatCurrency,
     formatDate,
+    getCategories,
+    filterSubscriptions,
   };
 }

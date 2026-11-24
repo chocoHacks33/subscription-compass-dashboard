@@ -51,12 +51,18 @@
       </section>
 
       <section class="panel" aria-labelledby="subscriptions-heading">
-        <div class="panel-heading">
+        <div class="panel-heading panel-heading--controls">
           <div>
             <p class="eyebrow">Plan inventory</p>
             <h2 id="subscriptions-heading">Current subscriptions</h2>
           </div>
-          <span id="plan-count" class="count-pill">0 plans</span>
+          <div class="panel-actions">
+            <label class="control-label" for="category-filter">Category</label>
+            <select id="category-filter">
+              <option value="all">All categories</option>
+            </select>
+            <span id="plan-count" class="count-pill" aria-live="polite">0 plans</span>
+          </div>
         </div>
 
         <div class="table-wrap">
