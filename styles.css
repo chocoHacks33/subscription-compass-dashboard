@@ -123,10 +123,114 @@ h2 {
 }
 
 .metric-card,
+.budget-panel,
 .panel {
   border: 1px solid rgba(223, 229, 242, 0.9);
   background: var(--surface);
   box-shadow: var(--shadow);
+}
+
+.budget-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(300px, 1.15fr);
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 24px;
+  padding: 24px 26px;
+  border-radius: 22px;
+}
+
+.budget-status {
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.budget-controls {
+  min-width: 0;
+}
+
+.budget-form {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.budget-form label {
+  align-self: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.budget-input-wrap {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.budget-input-wrap:focus-within {
+  outline: 3px solid rgba(91, 91, 214, 0.24);
+  outline-offset: 2px;
+}
+
+.budget-input-wrap span {
+  padding-left: 12px;
+  color: var(--muted);
+}
+
+.budget-input-wrap input {
+  width: 110px;
+  min-height: 38px;
+  padding: 0 10px 0 4px;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  background: transparent;
+}
+
+.budget-form button {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 10px;
+  color: #ffffff;
+  background: var(--accent);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.budget-form button:hover {
+  background: #4949c4;
+}
+
+.budget-form button:focus-visible {
+  outline: 3px solid rgba(91, 91, 214, 0.28);
+  outline-offset: 2px;
+}
+
+.budget-progress {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e9ecf5;
+}
+
+.budget-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5b5bd6, #8f8ff0);
+  transition: width 180ms ease;
+}
+
+.budget-progress--over span {
+  background: #c2415a;
 }
 
 .metric-card {
@@ -236,6 +340,10 @@ tbody tr:last-child td {
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .budget-panel {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
@@ -251,6 +359,19 @@ tbody tr:last-child td {
 
   .metric-grid {
     grid-template-columns: 1fr;
+  }
+
+  .budget-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .budget-form label {
+    align-self: flex-start;
+  }
+
+  .budget-input-wrap input {
+    width: 100%;
   }
 
   .metric-card {

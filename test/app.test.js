@@ -12,6 +12,9 @@ const {
   getNextRenewal,
   formatCurrency,
   formatDate,
+  normalizeBudget,
+  calculateBudgetProgress,
+  describeBudget,
 } = require('../app.js');
 
 test('active subscriptions exclude paused plans', () => {
@@ -42,4 +45,21 @@ test('local ISO dates retain local calendar components', () => {
 test('currency and date formatters produce readable labels', () => {
   assert.equal(formatCurrency(12), '$12.00');
   assert.equal(formatDate('2026-12-15'), 'Dec 15, 2026');
+});
+
+test('budget values accept positive numbers and reject invalid input', () => {
+  assert.equal(normalizeBudget('125.50'), 125.5);
+  assert.equal(normalizeBudget('0'), 100);
+  assert.equal(normalizeBudget('not-a-number', 80), 80);
+});
+
+test('budget progress is bounded to the progressbar range', () => {
+  assert.equal(calculateBudgetProgress(50, 100), 50);
+  assert.equal(calculateBudgetProgress(120, 100), 100);
+  assert.equal(calculateBudgetProgress(-10, 100), 0);
+});
+
+test('budget description reports remaining and overspend amounts', () => {
+  assert.equal(describeBudget(80, 100), '$20.00 remaining of $100.00');
+  assert.equal(describeBudget(120, 100), '$20.00 over the $100.00 target');
 });

@@ -45,6 +45,9 @@ const subscriptions = Object.freeze([
   },
 ]);
 
+const BUDGET_STORAGE_KEY = 'subscription-compass.monthly-budget';
+const DEFAULT_MONTHLY_BUDGET = 100;
+
 function getActiveSubscriptions(items) {
   return items.filter((item) => item.status === 'Active');
 }
@@ -90,6 +93,23 @@ function formatDate(dateString) {
     day: 'numeric',
     year: 'numeric',
   }).format(new Date(year, month - 1, day));
+}
+
+function normalizeBudget(value, fallback = DEFAULT_MONTHLY_BUDGET) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function calculateBudgetProgress(spend, budget) {
+  if (budget <= 0) return 0;
+  return Math.min(Math.max((spend / budget) * 100, 0), 100);
+}
+
+function describeBudget(spend, budget) {
+  const difference = budget - spend;
+  return difference >= 0
+    ? `${formatCurrency(difference)} remaining of ${formatCurrency(budget)}`
+    : `${formatCurrency(Math.abs(difference))} over the ${formatCurrency(budget)} target`;
 }
 
 function makeCell(text, className = '') {
@@ -144,8 +164,47 @@ function renderDashboard(items) {
   renderSubscriptionRows(items);
 }
 
+function renderBudget(items, budget) {
+  const spend = calculateMonthlyTotal(items);
+  const progressValue = calculateBudgetProgress(spend, budget);
+  const progress = document.querySelector('#budget-progress');
+
+  document.querySelector('#budget-input').value = budget.toFixed(2);
+  document.querySelector('#budget-status').textContent = describeBudget(spend, budget);
+  document.querySelector('#budget-progress-fill').style.width = `${progressValue}%`;
+  progress.setAttribute('aria-valuenow', String(Math.round(progressValue)));
+  progress.classList.toggle('budget-progress--over', spend > budget);
+}
+
+function setupBudget(items) {
+  const form = document.querySelector('#budget-form');
+  let savedBudget = DEFAULT_MONTHLY_BUDGET;
+
+  try {
+    savedBudget = normalizeBudget(localStorage.getItem(BUDGET_STORAGE_KEY));
+  } catch {
+    savedBudget = DEFAULT_MONTHLY_BUDGET;
+  }
+
+  renderBudget(items, savedBudget);
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const budget = normalizeBudget(document.querySelector('#budget-input').value);
+
+    try {
+      localStorage.setItem(BUDGET_STORAGE_KEY, String(budget));
+    } catch {
+      // The dashboard still works when browser storage is unavailable.
+    }
+
+    renderBudget(items, budget);
+  });
+}
+
 if (typeof document !== 'undefined') {
   renderDashboard(subscriptions);
+  setupBudget(subscriptions);
 }
 
 if (typeof module !== 'undefined') {
@@ -158,5 +217,8 @@ if (typeof module !== 'undefined') {
     getNextRenewal,
     formatCurrency,
     formatDate,
+    normalizeBudget,
+    calculateBudgetProgress,
+    describeBudget,
   };
 }
