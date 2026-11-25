@@ -123,10 +123,48 @@ h2 {
 }
 
 .metric-card,
+.insight-panel,
 .panel {
   border: 1px solid rgba(223, 229, 242, 0.9);
   background: var(--surface);
   box-shadow: var(--shadow);
+}
+
+.insight-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 22px 26px;
+  border-radius: 20px;
+}
+
+.insight-detail {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.insight-share {
+  min-width: 150px;
+  text-align: right;
+}
+
+.insight-share strong,
+.insight-share span {
+  display: block;
+}
+
+.insight-share strong {
+  color: var(--accent);
+  font-size: 2rem;
+  letter-spacing: -0.04em;
+}
+
+.insight-share span {
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .metric-card {
@@ -255,6 +293,16 @@ tbody tr:last-child td {
 
   .metric-card {
     min-height: 142px;
+  }
+
+  .insight-panel {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .insight-share {
+    min-width: 0;
+    text-align: left;
   }
 
   .panel-heading,
