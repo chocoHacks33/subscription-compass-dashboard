@@ -175,6 +175,53 @@ h2 {
   border-bottom: 1px solid var(--line);
 }
 
+.table-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) 1fr;
+  gap: 8px 18px;
+  padding: 18px 26px;
+  border-bottom: 1px solid var(--line);
+  background: #fafbfe;
+}
+
+.table-tools label {
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.table-tools input {
+  grid-column: 1;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd3e4;
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.table-tools input:focus-visible {
+  border-color: var(--accent);
+  outline: 3px solid rgba(91, 91, 214, 0.18);
+  outline-offset: 1px;
+}
+
+.search-results {
+  align-self: center;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: right;
+}
+
+.empty-results {
+  padding-block: 28px;
+  color: var(--muted);
+  text-align: center;
+}
+
 .count-pill {
   padding: 7px 11px;
   color: var(--accent);
@@ -262,5 +309,17 @@ tbody tr:last-child td {
   td {
     padding-right: 18px;
     padding-left: 18px;
+  }
+
+  .table-tools {
+    grid-template-columns: 1fr;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .search-results {
+    grid-column: 1;
+    grid-row: auto;
+    text-align: left;
   }
 }

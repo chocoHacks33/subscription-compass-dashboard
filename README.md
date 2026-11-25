@@ -22,3 +22,5 @@ The checks use Node's built-in test runner, so there are no packages to install.
 - `test/app.test.js` — calculation and formatting tests
 
 The sample data is intentionally local and easy to replace with real subscription records.
+
+Use the built-in search to narrow the inventory by service, category, or plan status.
