@@ -263,4 +263,57 @@ tbody tr:last-child td {
     padding-right: 18px;
     padding-left: 18px;
   }
+
+  .table-wrap {
+    overflow: visible;
+    padding: 0 14px 14px;
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    margin-top: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 12px 14px;
+    text-align: right;
+  }
+
+  td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  td:last-child {
+    border-bottom: 0;
+  }
 }

@@ -92,10 +92,11 @@ function formatDate(dateString) {
   }).format(new Date(year, month - 1, day));
 }
 
-function makeCell(text, className = '') {
+function makeCell(text, className = '', label = '') {
   const cell = document.createElement('td');
   cell.textContent = text;
   if (className) cell.className = className;
+  if (label) cell.dataset.label = label;
   return cell;
 }
 
@@ -106,13 +107,14 @@ function renderSubscriptionRows(items) {
   items.forEach((item) => {
     const row = document.createElement('tr');
     row.append(
-      makeCell(item.name, 'service-name'),
-      makeCell(item.category),
-      makeCell(formatCurrency(item.monthlyCost)),
-      makeCell(formatDate(item.renewalDate)),
+      makeCell(item.name, 'service-name', 'Service'),
+      makeCell(item.category, '', 'Category'),
+      makeCell(formatCurrency(item.monthlyCost), '', 'Monthly cost'),
+      makeCell(formatDate(item.renewalDate), '', 'Renews'),
     );
 
     const statusCell = document.createElement('td');
+    statusCell.dataset.label = 'Status';
     const status = document.createElement('span');
     status.className = `status-pill${
       item.status === 'Paused' ? ' status-pill--paused' : ''
