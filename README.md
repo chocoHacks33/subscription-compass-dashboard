@@ -22,3 +22,5 @@ The checks use Node's built-in test runner, so there are no packages to install.
 - `test/app.test.js` — calculation and formatting tests
 
 The sample data is intentionally local and easy to replace with real subscription records.
+
+Use **Print report** to produce a compact, ink-friendly subscription overview for review or PDF export.

@@ -12,6 +12,7 @@ const {
   getNextRenewal,
   formatCurrency,
   formatDate,
+  printDashboard,
 } = require('../app.js');
 
 test('active subscriptions exclude paused plans', () => {
@@ -42,4 +43,16 @@ test('local ISO dates retain local calendar components', () => {
 test('currency and date formatters produce readable labels', () => {
   assert.equal(formatCurrency(12), '$12.00');
   assert.equal(formatDate('2026-12-15'), 'Dec 15, 2026');
+});
+
+test('print action delegates to the browser print dialog', () => {
+  let printCalls = 0;
+
+  printDashboard({
+    print() {
+      printCalls += 1;
+    },
+  });
+
+  assert.equal(printCalls, 1);
 });
