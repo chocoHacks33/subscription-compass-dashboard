@@ -22,3 +22,5 @@ The checks use Node's built-in test runner, so there are no packages to install.
 - `test/app.test.js` — calculation and formatting tests
 
 The sample data is intentionally local and easy to replace with real subscription records.
+
+The inventory can be sorted by renewal date, highest monthly cost, or service name.

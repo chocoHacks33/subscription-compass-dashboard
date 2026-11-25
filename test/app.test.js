@@ -12,6 +12,7 @@ const {
   getNextRenewal,
   formatCurrency,
   formatDate,
+  sortSubscriptions,
 } = require('../app.js');
 
 test('active subscriptions exclude paused plans', () => {
@@ -42,4 +43,25 @@ test('local ISO dates retain local calendar components', () => {
 test('currency and date formatters produce readable labels', () => {
   assert.equal(formatCurrency(12), '$12.00');
   assert.equal(formatDate('2026-12-15'), 'Dec 15, 2026');
+});
+
+test('subscription sorting supports renewal, cost, and name without mutating input', () => {
+  const items = [
+    { name: 'Beta', monthlyCost: 20, renewalDate: '2027-02-01' },
+    { name: 'Alpha', monthlyCost: 10, renewalDate: '2027-01-01' },
+    { name: 'Gamma', monthlyCost: 20, renewalDate: '2027-03-01' },
+  ];
+
+  assert.deepEqual(sortSubscriptions(items).map((item) => item.name), ['Alpha', 'Beta', 'Gamma']);
+  assert.deepEqual(sortSubscriptions(items, 'cost-high').map((item) => item.name), [
+    'Beta',
+    'Gamma',
+    'Alpha',
+  ]);
+  assert.deepEqual(sortSubscriptions(items, 'name').map((item) => item.name), [
+    'Alpha',
+    'Beta',
+    'Gamma',
+  ]);
+  assert.deepEqual(items.map((item) => item.name), ['Beta', 'Alpha', 'Gamma']);
 });

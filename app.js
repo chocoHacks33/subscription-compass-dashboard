@@ -92,6 +92,25 @@ function formatDate(dateString) {
   }).format(new Date(year, month - 1, day));
 }
 
+function sortSubscriptions(items, order = 'renewal') {
+  const sortedItems = [...items];
+
+  if (order === 'cost-high') {
+    return sortedItems.sort(
+      (first, second) =>
+        second.monthlyCost - first.monthlyCost || first.name.localeCompare(second.name),
+    );
+  }
+
+  if (order === 'name') {
+    return sortedItems.sort((first, second) => first.name.localeCompare(second.name));
+  }
+
+  return sortedItems.sort((first, second) =>
+    first.renewalDate.localeCompare(second.renewalDate),
+  );
+}
+
 function makeCell(text, className = '') {
   const cell = document.createElement('td');
   cell.textContent = text;
@@ -127,6 +146,7 @@ function renderSubscriptionRows(items) {
 function renderDashboard(items) {
   const activeItems = getActiveSubscriptions(items);
   const nextRenewal = getNextRenewal(items);
+  const sortSelect = document.querySelector('#subscription-sort');
 
   document.querySelector('#monthly-spend').textContent = formatCurrency(
     calculateMonthlyTotal(items),
@@ -141,7 +161,12 @@ function renderDashboard(items) {
     ? `${formatDate(nextRenewal.renewalDate)} · ${formatCurrency(nextRenewal.monthlyCost)}`
     : 'No upcoming charge';
 
-  renderSubscriptionRows(items);
+  const renderSortedRows = (order) => {
+    renderSubscriptionRows(sortSubscriptions(items, order));
+  };
+
+  renderSortedRows(sortSelect.value);
+  sortSelect.addEventListener('change', (event) => renderSortedRows(event.target.value));
 }
 
 if (typeof document !== 'undefined') {
@@ -158,5 +183,6 @@ if (typeof module !== 'undefined') {
     getNextRenewal,
     formatCurrency,
     formatDate,
+    sortSubscriptions,
   };
 }
