@@ -56,7 +56,17 @@
             <p class="eyebrow">Plan inventory</p>
             <h2 id="subscriptions-heading">Current subscriptions</h2>
           </div>
-          <span id="plan-count" class="count-pill">0 plans</span>
+          <div class="panel-actions">
+            <span id="plan-count" class="count-pill">0 plans</span>
+            <label class="sort-control" for="subscription-sort">
+              <span>Sort by</span>
+              <select id="subscription-sort">
+                <option value="renewal">Renewal date</option>
+                <option value="cost-high">Highest cost</option>
+                <option value="name">Service name</option>
+              </select>
+            </label>
+          </div>
         </div>
 
         <div class="table-wrap">

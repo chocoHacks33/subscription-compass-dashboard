@@ -175,6 +175,38 @@ h2 {
   border-bottom: 1px solid var(--line);
 }
 
+.panel-actions,
+.sort-control {
+  display: flex;
+  align-items: center;
+}
+
+.panel-actions {
+  gap: 14px;
+}
+
+.sort-control {
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.sort-control select {
+  padding: 8px 30px 8px 10px;
+  border: 1px solid #cbd3e4;
+  border-radius: 9px;
+  color: var(--ink);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.sort-control select:focus-visible {
+  border-color: var(--accent);
+  outline: 3px solid rgba(91, 91, 214, 0.18);
+  outline-offset: 1px;
+}
+
 .count-pill {
   padding: 7px 11px;
   color: var(--accent);
@@ -245,6 +277,12 @@ tbody tr:last-child td {
   }
 
   .hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .panel-heading,
+  .panel-actions {
     align-items: flex-start;
     flex-direction: column;
   }
