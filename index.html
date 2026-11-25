@@ -59,6 +59,18 @@
           <span id="plan-count" class="count-pill">0 plans</span>
         </div>
 
+        <div class="table-tools">
+          <label for="subscription-search">Search subscriptions</label>
+          <input
+            id="subscription-search"
+            type="search"
+            placeholder="Search by service, category, or status"
+            autocomplete="off"
+            aria-describedby="search-results"
+          />
+          <p id="search-results" class="search-results" role="status" aria-live="polite"></p>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead>

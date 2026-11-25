@@ -92,6 +92,18 @@ function formatDate(dateString) {
   }).format(new Date(year, month - 1, day));
 }
 
+function filterSubscriptions(items, query) {
+  const normalizedQuery = query.trim().toLocaleLowerCase('en');
+
+  if (!normalizedQuery) return [...items];
+
+  return items.filter((item) =>
+    [item.name, item.category, item.status].some((value) =>
+      value.toLocaleLowerCase('en').includes(normalizedQuery),
+    ),
+  );
+}
+
 function makeCell(text, className = '') {
   const cell = document.createElement('td');
   cell.textContent = text;
@@ -102,6 +114,15 @@ function makeCell(text, className = '') {
 function renderSubscriptionRows(items) {
   const list = document.querySelector('#subscription-list');
   list.replaceChildren();
+
+  if (items.length === 0) {
+    const row = document.createElement('tr');
+    const cell = makeCell('No subscriptions match this search.', 'empty-results');
+    cell.colSpan = 5;
+    row.append(cell);
+    list.append(row);
+    return;
+  }
 
   items.forEach((item) => {
     const row = document.createElement('tr');
@@ -127,6 +148,8 @@ function renderSubscriptionRows(items) {
 function renderDashboard(items) {
   const activeItems = getActiveSubscriptions(items);
   const nextRenewal = getNextRenewal(items);
+  const searchInput = document.querySelector('#subscription-search');
+  const searchResults = document.querySelector('#search-results');
 
   document.querySelector('#monthly-spend').textContent = formatCurrency(
     calculateMonthlyTotal(items),
@@ -135,13 +158,22 @@ function renderDashboard(items) {
     calculateYearlyForecast(items),
   );
   document.querySelector('#active-count').textContent = String(activeItems.length);
-  document.querySelector('#plan-count').textContent = `${items.length} plans`;
   document.querySelector('#next-renewal').textContent = nextRenewal?.name ?? 'None';
   document.querySelector('#next-renewal-date').textContent = nextRenewal
     ? `${formatDate(nextRenewal.renewalDate)} · ${formatCurrency(nextRenewal.monthlyCost)}`
     : 'No upcoming charge';
 
-  renderSubscriptionRows(items);
+  const renderSearchResults = (query = '') => {
+    const matches = filterSubscriptions(items, query);
+    document.querySelector('#plan-count').textContent = query.trim()
+      ? `${matches.length} of ${items.length} plans`
+      : `${items.length} plans`;
+    searchResults.textContent = `${matches.length} ${matches.length === 1 ? 'plan' : 'plans'} shown`;
+    renderSubscriptionRows(matches);
+  };
+
+  renderSearchResults();
+  searchInput.addEventListener('input', (event) => renderSearchResults(event.target.value));
 }
 
 if (typeof document !== 'undefined') {
@@ -158,5 +190,6 @@ if (typeof module !== 'undefined') {
     getNextRenewal,
     formatCurrency,
     formatDate,
+    filterSubscriptions,
   };
 }

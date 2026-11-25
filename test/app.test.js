@@ -12,6 +12,7 @@ const {
   getNextRenewal,
   formatCurrency,
   formatDate,
+  filterSubscriptions,
 } = require('../app.js');
 
 test('active subscriptions exclude paused plans', () => {
@@ -42,4 +43,17 @@ test('local ISO dates retain local calendar components', () => {
 test('currency and date formatters produce readable labels', () => {
   assert.equal(formatCurrency(12), '$12.00');
   assert.equal(formatDate('2026-12-15'), 'Dec 15, 2026');
+});
+
+test('subscription search matches service, category, and status without mutating input', () => {
+  const items = [
+    { name: 'CloudSafe', category: 'Storage', status: 'Active' },
+    { name: 'NewsDesk', category: 'News', status: 'Paused' },
+  ];
+
+  assert.deepEqual(filterSubscriptions(items, ' CLOUD '), [items[0]]);
+  assert.deepEqual(filterSubscriptions(items, 'news'), [items[1]]);
+  assert.deepEqual(filterSubscriptions(items, 'paused'), [items[1]]);
+  assert.deepEqual(filterSubscriptions(items, ''), items);
+  assert.notEqual(filterSubscriptions(items, ''), items);
 });
