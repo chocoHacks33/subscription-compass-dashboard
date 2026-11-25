@@ -124,6 +124,10 @@ function renderSubscriptionRows(items) {
   });
 }
 
+function printDashboard(browserWindow = window) {
+  browserWindow.print();
+}
+
 function renderDashboard(items) {
   const activeItems = getActiveSubscriptions(items);
   const nextRenewal = getNextRenewal(items);
@@ -142,6 +146,7 @@ function renderDashboard(items) {
     : 'No upcoming charge';
 
   renderSubscriptionRows(items);
+  document.querySelector('#print-report').addEventListener('click', () => printDashboard());
 }
 
 if (typeof document !== 'undefined') {
@@ -158,5 +163,6 @@ if (typeof module !== 'undefined') {
     getNextRenewal,
     formatCurrency,
     formatDate,
+    printDashboard,
   };
 }
