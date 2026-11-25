@@ -8,6 +8,8 @@ const {
   getActiveSubscriptions,
   calculateMonthlyTotal,
   calculateYearlyForecast,
+  getLargestActiveSubscription,
+  calculateMonthlyShare,
   getLocalISODate,
   getNextRenewal,
   formatCurrency,
@@ -24,6 +26,25 @@ test('monthly total includes active plans only', () => {
 
 test('yearly forecast is twelve months of active costs', () => {
   assert.equal(calculateYearlyForecast(subscriptions), 971.76);
+});
+
+test('largest cost insight ignores paused plans and reports its monthly share', () => {
+  const items = [
+    { name: 'Starter', status: 'Active', monthlyCost: 20 },
+    { name: 'Pro', status: 'Active', monthlyCost: 30 },
+    { name: 'Legacy', status: 'Paused', monthlyCost: 100 },
+  ];
+  const largest = getLargestActiveSubscription(items);
+
+  assert.equal(largest.name, 'Pro');
+  assert.equal(calculateMonthlyShare(largest, items), 60);
+});
+
+test('largest cost insight handles an inventory without active spend', () => {
+  const items = [{ name: 'Paused plan', status: 'Paused', monthlyCost: 12 }];
+
+  assert.equal(getLargestActiveSubscription(items), null);
+  assert.equal(calculateMonthlyShare(null, items), 0);
 });
 
 test('next renewal ignores paused and past plans', () => {

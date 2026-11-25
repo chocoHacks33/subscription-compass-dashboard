@@ -60,6 +60,18 @@ function calculateYearlyForecast(items) {
   return calculateMonthlyTotal(items) * 12;
 }
 
+function getLargestActiveSubscription(items) {
+  return getActiveSubscriptions(items).reduce(
+    (largest, item) => (!largest || item.monthlyCost > largest.monthlyCost ? item : largest),
+    null,
+  );
+}
+
+function calculateMonthlyShare(item, items) {
+  const monthlyTotal = calculateMonthlyTotal(items);
+  return item && monthlyTotal > 0 ? (item.monthlyCost / monthlyTotal) * 100 : 0;
+}
+
 function getLocalISODate(date = new Date()) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -127,6 +139,7 @@ function renderSubscriptionRows(items) {
 function renderDashboard(items) {
   const activeItems = getActiveSubscriptions(items);
   const nextRenewal = getNextRenewal(items);
+  const largestCost = getLargestActiveSubscription(items);
 
   document.querySelector('#monthly-spend').textContent = formatCurrency(
     calculateMonthlyTotal(items),
@@ -140,6 +153,12 @@ function renderDashboard(items) {
   document.querySelector('#next-renewal-date').textContent = nextRenewal
     ? `${formatDate(nextRenewal.renewalDate)} · ${formatCurrency(nextRenewal.monthlyCost)}`
     : 'No upcoming charge';
+  document.querySelector('#largest-cost-detail').textContent = largestCost
+    ? `${largestCost.name} · ${formatCurrency(largestCost.monthlyCost)} per month · ${largestCost.category}`
+    : 'No active plans';
+  document.querySelector('#largest-cost-share').textContent = `${Math.round(
+    calculateMonthlyShare(largestCost, items),
+  )}%`;
 
   renderSubscriptionRows(items);
 }
@@ -154,6 +173,8 @@ if (typeof module !== 'undefined') {
     getActiveSubscriptions,
     calculateMonthlyTotal,
     calculateYearlyForecast,
+    getLargestActiveSubscription,
+    calculateMonthlyShare,
     getLocalISODate,
     getNextRenewal,
     formatCurrency,
